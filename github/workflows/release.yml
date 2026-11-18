@@ -1,0 +1,25 @@
+# Tag a version (e.g. `git tag v0.3.0 && git push --tags`) and this workflow
+# publishes a GitHub Release with the Blender add-on zip attached.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package the Blender add-on
+        run: |
+          mkdir -p dist
+          cd blender && zip -9 ../dist/FaveWeather_Blender_Addon.zip faveweather_importer.py
+      - name: Create release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/FaveWeather_Blender_Addon.zip
+          generate_release_notes: true
